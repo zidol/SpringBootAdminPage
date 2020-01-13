@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@ToString(exclude = {"user", "item"})
+@ToString(exclude = {"user", "item"}) //user, item 객체를 상호참조 하고 있어서 lombok때문에 오버플로 생겨서 빼줘야 함
 public class OrderDetail {
 
     @Id

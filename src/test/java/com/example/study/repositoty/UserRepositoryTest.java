@@ -35,7 +35,8 @@ public class UserRepositoryTest extends DemoApplicationTests {
     @Transactional
     public void read() {
         //id type Long 이기 때문 2L
-        Optional<User> user = userRepository.findById(1L);
+//        Optional<User> user = userRepository.findById(1L);
+        Optional<User> user = userRepository.findByAccount("TestUser04");
 
         user.ifPresent(selectUser -> {
 //            System.out.println("user : " + selectUser);

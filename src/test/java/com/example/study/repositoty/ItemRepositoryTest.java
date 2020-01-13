@@ -34,8 +34,8 @@ public class ItemRepositoryTest extends DemoApplicationTests {
 
         Assert.assertTrue(item.isPresent());
 
-        item.ifPresent(i -> {
-            System.out.println(i);
-        });
+//        item.ifPresent(i -> {
+//            System.out.println(i);
+//        });
     }
 }
