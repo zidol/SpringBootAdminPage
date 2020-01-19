@@ -22,8 +22,6 @@ public class OrderDetail {
 
     private String status;
 
-    private LocalDateTime orderAt;
-
     private LocalDateTime arrivalDate;
 
     private Integer quantity;
@@ -37,6 +35,10 @@ public class OrderDetail {
     private LocalDateTime updatedAt;
 
     private String updatedBy;
+
+    private Long itemId;
+
+    private Long orderGroupId;
 
     //자신 : 상대
     // N : 1
