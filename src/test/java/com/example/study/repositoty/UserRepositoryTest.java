@@ -1,7 +1,6 @@
 package com.example.study.repositoty;
 
 import com.example.study.DemoApplicationTests;
-import com.example.study.model.entity.Item;
 import com.example.study.model.entity.User;
 import com.example.study.repository.UserRepository;
 import org.junit.Assert;
@@ -20,14 +19,14 @@ public class UserRepositoryTest extends DemoApplicationTests {
 
     @Test
     public void create() {
-        String account = "Test01";
-        String password = "Test01";
+        String account = "Test03";
+        String password = "Test03";
         String status = "REGISTERED";
-        String email = "Test01@gmail.com";
-        String phoneNumber = "010-1111-2222";
+        String email = "Test03@gmail.com";
+        String phoneNumber = "010-1111-3333";
         LocalDateTime registeredAt = LocalDateTime.now();
-        LocalDateTime createdAt = LocalDateTime.now();
-        String createdBy = "AdminServer";
+//        LocalDateTime createdAt = LocalDateTime.now();
+//        String createdBy = "AdminServer";
 
         User user = new User();
         user.setAccount(account);
@@ -36,8 +35,14 @@ public class UserRepositoryTest extends DemoApplicationTests {
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
         user.setRegisteredAt(registeredAt);
-        user.setCreatedAt(createdAt);
-        user.setCreatedBy(createdBy);
+
+        //builder패턴(Lombok)
+        User u = User.builder()
+                .account(account)
+                .password(password)
+                .status(status)
+                .email(email)
+                .build();
 
         User newUser = userRepository.save(user);
 
@@ -62,6 +67,35 @@ public class UserRepositoryTest extends DemoApplicationTests {
 //        });
 
         User user = userRepository.findFirstByPhoneNumberOrderByIdDesc("010-1111-2222");
+
+        //////chain Pattern//////
+//        user.setEmail("")
+//                .setPhoneNumber("")
+//                .setStatus("");
+//        User u = new User().setAccount("").setEmail("").setPassword("");
+        //////////////////////////
+        if(user != null) {
+            user.getOrderGroupList().stream().forEach(orderGroup -> {
+
+                System.out.println("------------------주문 묶음-------------------");
+                System.out.println("수령 인 : " + orderGroup.getRevName());
+                System.out.println("수령 지 : " + orderGroup.getRevAddress());
+                System.out.println("총금액 : " + orderGroup.getTotalPrice());
+                System.out.println("총수량 : " + orderGroup.getTotalQuantity());
+                System.out.println("------------------주문 상세-------------------");
+
+                orderGroup.getOrderDetailList().forEach(orderDetail -> {
+                    System.out.println("파트너사 이름 : " + orderDetail.getItem().getPartner().getName());
+                    System.out.println("파트너사 카테고리  : " + orderDetail.getItem().getPartner().getCategory().getTitle());
+                    System.out.println("주문 상품 : " + orderDetail.getItem().getName());
+                    System.out.println("고객 센터 번호 : " + orderDetail.getItem().getPartner().getCallCenter());
+                    System.out.println("주문의 상태 : " + orderDetail.getStatus());
+                    System.out.println("도착 예정일자 : " + orderDetail.getArrivalDate());
+
+                });
+
+            });
+        }
         Assert.assertNotNull(user);
     }
 
