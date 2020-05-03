@@ -1,10 +1,15 @@
 package com.example.study.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,6 +17,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@ToString(exclude = {"orderDetailList", "partner"})
+@EntityListeners(AuditingEntityListener.class)//감시자 리스너 사용하겠다는 설정 -> @CreatedBy, @LastModifiedBy 설정시
+@Builder//생성자대신 사용할때
+@Accessors(chain = true)
 public class Item {
 
     @Id
@@ -26,7 +35,7 @@ public class Item {
 
     private String content;
 
-    private Integer price;
+    private BigDecimal price;
 
     private String brandName;
 
@@ -34,15 +43,24 @@ public class Item {
 
     private LocalDateTime unregisteredAt;
 
+    //LoginUserAuditorAware에서 설정한 AdminServer가 들어감
+    @CreatedDate
     private LocalDateTime createdAt;
 
+    @CreatedBy
     private String createdBy;
 
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    //LoginUserAuditorAware에서 설정한 AdminServer가 들어감
+    @LastModifiedBy
     private String updatedBy;
 
-    private Long partnerId;
+    // Item N : 1 Partner
+    @ManyToOne
+    private Partner partner;
+
     //자신 : orderDetail
     // 1 : N
     // LAZY = 지연 로딩, EAGER = 즉시로딩
@@ -52,7 +70,6 @@ public class Item {
     // user_id = order_detail_user_id
     // where item.id = ?
     // JOIN item item0_ left outer join order_detail orderdetai1_ on item0_.id=orderdetai1_.item_id left outer join user user2_ on orderdetai1_.user_id=user2_.id
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
-//    private List<OrderDetail> orderDetailList;
-
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
+    private List<OrderDetail> orderDetailList;
 }

@@ -1,20 +1,26 @@
 package com.example.study.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
+@ToString(exclude = {"user", "orderDetailList"})
+@EntityListeners(AuditingEntityListener.class)//감시자 리스너 사용하겠다는 설정 -> @CreatedBy, @LastModifiedBy 설정시
+@Builder//생성자대신 사용할때
+@Accessors(chain = true)
 public class OrderGroup {
 
     @Id
@@ -39,13 +45,26 @@ public class OrderGroup {
 
     private LocalDateTime arrivalDate;
 
+    //LoginUserAuditorAware에서 설정한 AdminServer가 들어감
+    @CreatedDate
     private LocalDateTime createdAt;
 
+    @CreatedBy
     private String createdBy;
 
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    //LoginUserAuditorAware에서 설정한 AdminServer가 들어감
+    @LastModifiedBy
     private String updatedBy;
 
-    private Long userId;
+    // OrderGroup N : 1 User
+    @ManyToOne
+    private User user;
+
+    //OrderGroup 1 : N OrderDetail
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderGroup")
+    private List<OrderDetail> orderDetailList;
+
 }
