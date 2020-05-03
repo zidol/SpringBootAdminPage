@@ -28,7 +28,7 @@ public class ItemRepositoryTest extends DemoApplicationTests {
         item.setRegisteredAt(LocalDateTime.now());
         item.setCreatedAt(LocalDateTime.now());
         item.setCreatedBy("Partner01");
-        item.setPartnerId(1L);
+//        item.setPartnerId(1L);// Long -> partner
 
         Item newItem = itemRepository.save(item);
 
