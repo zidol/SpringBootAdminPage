@@ -10,6 +10,8 @@ public abstract class BaseService<Req, Res, Entity> implements CrudInterface<Req
 
     @Autowired(required = false)
     protected JpaRepository<Entity, Long> baseRepository;
-            // JpaRepository<Item, Long>
+
+//    public abstract Header<List<UserApiResponse>> search(Pageable pageable);
+    // JpaRepository<Item, Long>
 
 }

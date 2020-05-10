@@ -5,16 +5,22 @@ import com.example.study.model.enumclass.UserStatus;
 import com.example.study.model.network.Header;
 import com.example.study.model.network.request.UserApiRequest;
 import com.example.study.model.network.response.UserApiResponse;
+import com.example.study.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResponse, User> {
 
-//    @Autowired
-//    private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     // 1. request data
     // 2. user 생성
@@ -37,7 +43,7 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
         User newUser = baseRepository.save(user);
 
         //3. 생성된 데이터 -> userApiResponse return
-        return response(newUser);
+        return Header.OK(response(newUser));
     }
 
     @Override
@@ -52,6 +58,8 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
 //                );
         return baseRepository.findById(id)
                 .map(user -> response(user)) //map 데이터 형태 변형할때 사용
+//                .map(userApiResponse -> Header.OK(userApiResponse))
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음")
                 );
     }
@@ -80,6 +88,7 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
         })
                 .map(user -> baseRepository.save(user))     //update    -> 새로운 유저 객체 반환 (newUser)
                 .map(updateUser -> response(updateUser))                //userApiResponse
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
 
 
@@ -102,7 +111,7 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
 //        return null;
     }
 
-    private Header<UserApiResponse> response(User user) {
+    private UserApiResponse response(User user) {
         // user -> userApiresponse
         UserApiResponse userApiResponse = UserApiResponse.builder()
                 .id(user.getId())
@@ -113,6 +122,16 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
                 .registeredAt(user.getRegisteredAt())
                 .unregisteredAt(user.getUnregisteredAt())
                 .build();
-        return Header.OK(userApiResponse);
+        return userApiResponse;
+    }
+
+
+    public Header<List<UserApiResponse>> search(Pageable pageable) {
+        Page<User> users = userRepository.findAll(pageable);
+
+        List<UserApiResponse> userApiResponseList = users.stream()
+                .map(user -> response(user))
+                .collect(Collectors.toList());
+        return Header.OK(userApiResponseList);
     }
 }
